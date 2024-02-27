@@ -1,19 +1,16 @@
-const forms = () => {
-  const form = document.querySelectorAll('.form'),
-        input = document.querySelectorAll('input'),
-        phoneInputs = document.querySelectorAll('input[name="user_phone"]');
+import checkNumInputs from './checkNumInputs'; 
 
-  phoneInputs.forEach(item => {
-    item.addEventListener('input', () => {
-      item.value = item.value.replace(/\D/, '');
-    })
-  })
+const forms = (state) => {
+  const form = document.querySelectorAll('.form'),
+        input = document.querySelectorAll('input');
+
+  checkNumInputs('input[name="user_phone"]');
 
   const message = {
     loading: 'Loading...',
     success: 'Success :)',
     failure: 'Something wrong :(' 
-  }
+  };
 
   const postData = async (url, data) => {
     document.querySelector('.status').textContent = message.loading;
@@ -23,13 +20,13 @@ const forms = () => {
     });
 
     return await res.text();
-  }
+  };
 
   const clearInputs = () => {
     input.forEach(input => {
       input.value = '';
     })
-  }
+  };
 
   form.forEach(item => {
     item.addEventListener('submit', (e) => {
@@ -40,6 +37,11 @@ const forms = () => {
       item.appendChild(statusMessage);
 
       const formData = new FormData(item);
+      if (item.getAttribute('data-calc') === 'end') {
+        for (let key in state) {
+          formData.append(key, state[key]);
+        }
+      }
 
       postData('assets/server.php', formData)
         .then(res => {
@@ -56,7 +58,7 @@ const forms = () => {
           }, 5000);
         })
     })
-  })
+  });
 }
 
 export default forms;
